@@ -29,6 +29,15 @@ function Navbar() {
                     <li className="nav-item">
                         <NavLink className="nav-link" to="/carrito">Carrito</NavLink>
                     </li>
+                    <li className="nav-item">
+                        <NavLink className="nav-link" to="/categorias">Categorías</NavLink>
+                    </li>
+                    <li className="nav-item">
+                        <NavLink className="nav-link" to="/login">Ingresar</NavLink>
+                    </li>
+                    <li className="nav-item">
+                        <NavLink className="nav-link" to="/registro">Registrarse</NavLink>
+                    </li>       
                 </ul>
             </div>
         </div>
