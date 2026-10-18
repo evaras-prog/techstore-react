@@ -30,6 +30,14 @@ export function CarritoProvider({ children }) {
     guardar(items.filter((i) => i.codigo !== codigo));
   };
 
+  const cambiarCantidad = (codigo, cantidad) => {
+    if (cantidad <= 0) {
+      quitar(codigo);
+      return;
+    }
+    guardar(items.map((i) => (i.codigo === codigo ? { ...i, cantidad } : i)));
+  };
+
   const vaciar = () => {
     guardar([]);
   };
@@ -43,7 +51,7 @@ export function CarritoProvider({ children }) {
 
   return (
     <CarritoContext.Provider
-      value={{ items, agregar, quitar, vaciar, total, cantidadTotal }}
+      value={{ items, agregar, quitar, cambiarCantidad, vaciar, total, cantidadTotal }}
     >
       {children}
     </CarritoContext.Provider>
