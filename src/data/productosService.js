@@ -19,7 +19,7 @@ function leer() {
         return leer();
     }
 
-    export function obtenerProductosPorCodigo(codigo) {
+    export function obtenerProductoPorCodigo(codigo) {
         return leer().find((p) => p.codigo === codigo) || null;
     }
 
