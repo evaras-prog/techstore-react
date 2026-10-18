@@ -1,4 +1,5 @@
 import { formatoCLP } from '../data/datos';
+import { Link } from 'react-router-dom';
 
 function ProductCard({ producto, onAgregar }) {
     return (
@@ -17,7 +18,24 @@ function ProductCard({ producto, onAgregar }) {
             <p className="card-text text-muted small">{producto.descripcion}</p>
 
             <div className="mt-auto">
-                <p className="fw-bold fs-5 mb-2">{formatoCLP(producto.precio)}</p>
+                {producto.oferta ? (
+                <p className="mb-2">
+                    <span className="text-decoration-line-through text-muted me-2">
+                        {formatoCLP(producto.precio)}
+                    </span>
+                    <span className="fw-bold fs-5 text-danger">
+                        {formatoCLP(producto.precioOferta)}
+                    </span>
+                </p>
+                ) : (
+                    <p className="fw-bold fs-5 mb-2">{formatoCLP(producto.precio)}</p>
+                )}                
+                <Link
+                    to={`/producto/${producto.codigo}`}
+                    className="btn btn-outline-secondary w-100 mb-2"
+                >
+                    Ver detalle
+                </Link>
                <button
                 className="btn btn-primary w-100"
                 onClick={() => onAgregar(producto)}
