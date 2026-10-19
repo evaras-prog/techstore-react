@@ -58,6 +58,7 @@ export function CarritoProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useCarrito() {
   return useContext(CarritoContext);
 }
