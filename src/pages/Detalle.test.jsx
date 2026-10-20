@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import Detalle from './Detalle';
 import { CarritoProvider } from '../context/CarritoContext';
+import { PRODUCTOS_BASE } from '../data/datos';
 
 function renderDetalle(ruta) {
   return render(
@@ -43,5 +44,25 @@ describe('Detalle', () => {
 
     expect(screen.getByText(/99\.990/)).toBeInTheDocument();
     expect(screen.getByText(/Últimas 4 unidades/)).toBeInTheDocument();
+  });
+
+    it('agrega el producto al carrito al presionar el botón', () => {
+    renderDetalle('/producto/TEC001');
+
+    fireEvent.click(screen.getByRole('button', { name: /agregar al carrito/i }));
+
+    expect(JSON.parse(localStorage.getItem('carrito'))).toHaveLength(1);
+  });
+
+  it('muestra "Sin stock" y deshabilita el botón cuando no quedan unidades', () => {
+    const sinStock = PRODUCTOS_BASE.map((p) =>
+      p.codigo === 'TEC001' ? { ...p, stock: 0 } : p
+    );
+    localStorage.setItem('productosAdmin', JSON.stringify(sinStock));
+
+    renderDetalle('/producto/TEC001');
+
+    expect(screen.getByText('Sin stock')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /agregar al carrito/i })).toBeDisabled();
   });
 });

@@ -16,6 +16,16 @@ const producto = {
   cantidad: 1,
 };
 
+const productoEnOferta = {
+  codigo: 'TEC003',
+  nombre: 'Audífonos Noise Pro',
+  precio: 129990,
+  oferta: true,
+  precioOferta: 99990,
+  imagen: '/img/audifonos.jpg',
+  cantidad: 1,
+};
+
 function renderCheckout() {
   return render(
     <AuthProvider>
@@ -55,6 +65,56 @@ function presionarPagar() {
 describe('Checkout', () => {
   beforeEach(() => {
     localStorage.clear();
+  });
+
+      it('completa una compra con retiro en tienda y un producto en oferta', () => {
+        localStorage.setItem('carrito', JSON.stringify([productoEnOferta]));
+        renderCheckout();
+
+    fireEvent.click(screen.getByLabelText('Retiro en tienda'));
+    escribir('Nombre', 'Ana');
+    escribir('Apellidos', 'Pérez');
+    escribir('Correo', 'ana@correo.cl');
+    escribir('Número de tarjeta', '4111 1111 1111 1111');
+    presionarPagar();
+
+    expect(screen.getByText(/¡Compra exitosa!/)).toBeInTheDocument();
+    const [pedido] = JSON.parse(localStorage.getItem('pedidosAdmin'));
+    expect(pedido.entrega).toBe('retiro');
+    expect(pedido.direccion).toBe('');
+    expect(pedido.items[0].precioUnitario).toBe(99990);
+  });
+
+  it('autocompleta los datos del formulario cuando hay sesión iniciada', () => {
+    localStorage.setItem('carrito', JSON.stringify([producto]));
+    localStorage.setItem(
+      'usuarioActivo',
+      JSON.stringify({
+        nombre: 'Ana',
+        apellidos: 'Pérez',
+        correo: 'ana@correo.cl',
+        direccion: 'Av. Providencia 1234',
+        region: 'Región Metropolitana de Santiago',
+        comuna: 'Santiago',
+        tipo: 'Cliente',
+      })
+    );
+    renderCheckout();
+
+    expect(screen.getByLabelText('Nombre')).toHaveValue('Ana');
+    expect(screen.getByLabelText('Dirección')).toHaveValue('Av. Providencia 1234');
+    expect(screen.getByLabelText('Comuna')).toHaveValue('Santiago');
+  });
+
+  it('limpia la comuna al cambiar la región', () => {
+    localStorage.setItem('carrito', JSON.stringify([producto]));
+    renderCheckout();
+
+    escribir('Región', 'Región Metropolitana de Santiago');
+    escribir('Comuna', 'Santiago');
+    escribir('Región', 'Región de Valparaíso');
+
+    expect(screen.getByLabelText('Comuna')).toHaveValue('');
   });
 
   it('avisa cuando el carrito está vacío', () => {
