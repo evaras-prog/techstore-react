@@ -42,6 +42,9 @@ function Navbar() {
               <NavLink className="nav-link" to="/blog">Blog</NavLink>
             </li>
             <li className="nav-item">
+              <NavLink className="nav-link" to="/contacto">Contacto</NavLink>
+            </li>
+            <li className="nav-item">
               <NavLink className="nav-link" to="/carrito">
                 Carrito
                 <span className="badge bg-primary ms-1">{cantidadTotal}</span>

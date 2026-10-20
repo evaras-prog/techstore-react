@@ -15,6 +15,7 @@ import Admin from './pages/Admin';
 import Nosotros from './pages/Nosotros';
 import Blogs from './pages/Blogs';
 import DetalleBlog from './pages/DetalleBlog';
+import Contacto from './pages/Contacto';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
         <Route path="/admin/*" element={<Admin />} />
+        <Route path="/contacto" element={<Contacto />} />
       </Routes>
     </BrowserRouter>
   );
