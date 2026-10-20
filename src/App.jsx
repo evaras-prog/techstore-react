@@ -13,6 +13,8 @@ import Login from './pages/Login';
 import Registro from './pages/Registro';
 import Admin from './pages/Admin';
 import Nosotros from './pages/Nosotros';
+import Blogs from './pages/Blogs';
+import DetalleBlog from './pages/DetalleBlog';
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
         <Route path="/categorias" element={<Categorias />} />
         <Route path="/ofertas" element={<Ofertas />} />
         <Route path="/nosotros" element={<Nosotros />} />
+        <Route path="/blog" element={<Blogs />} />
+        <Route path="/blog/:id" element={<DetalleBlog />} />
         <Route path="/carrito" element={<Carrito />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/compra-exitosa" element={<CompraExitosa />} />
