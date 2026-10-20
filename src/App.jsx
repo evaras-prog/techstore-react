@@ -12,6 +12,10 @@ import PagoFallido from './pages/PagoFallido';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
 import Admin from './pages/Admin';
+import Nosotros from './pages/Nosotros';
+import Blogs from './pages/Blogs';
+import DetalleBlog from './pages/DetalleBlog';
+import Contacto from './pages/Contacto';
 
 function App() {
   return (
@@ -23,6 +27,9 @@ function App() {
         <Route path="/producto/:codigo" element={<Detalle />} />
         <Route path="/categorias" element={<Categorias />} />
         <Route path="/ofertas" element={<Ofertas />} />
+        <Route path="/nosotros" element={<Nosotros />} />
+        <Route path="/blog" element={<Blogs />} />
+        <Route path="/blog/:id" element={<DetalleBlog />} />
         <Route path="/carrito" element={<Carrito />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/compra-exitosa" element={<CompraExitosa />} />
@@ -30,6 +37,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
         <Route path="/admin/*" element={<Admin />} />
+        <Route path="/contacto" element={<Contacto />} />
       </Routes>
     </BrowserRouter>
   );

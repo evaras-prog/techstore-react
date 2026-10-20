@@ -42,4 +42,24 @@ describe('CampoFormulario', () => {
 
     expect(onChange).toHaveBeenCalledTimes(1);
   });
+
+    it('dibuja una lista desplegable con sus opciones cuando as es select', () => {
+    render(
+      <CampoFormulario label="Asunto" name="asunto" value="" onChange={() => {}} as="select">
+        <option value="">Elige</option>
+        <option value="a">Opción A</option>
+      </CampoFormulario>
+    );
+
+    expect(screen.getByLabelText('Asunto').tagName).toBe('SELECT');
+    expect(screen.getByRole('option', { name: 'Opción A' })).toBeInTheDocument();
+  });
+
+  it('dibuja un área de texto cuando as es textarea', () => {
+    render(
+      <CampoFormulario label="Mensaje" name="mensaje" value="" onChange={() => {}} as="textarea" />
+    );
+
+    expect(screen.getByLabelText('Mensaje').tagName).toBe('TEXTAREA');
+  });
 });

@@ -6,21 +6,30 @@ function CampoFormulario({
   error,
   type = 'text',
   placeholder = '',
+  as = 'input',
+  rows = 4,
+  children,
 }) {
+  const clase = `${as === 'select' ? 'form-select' : 'form-control'} ${
+    error ? 'is-invalid' : ''
+  }`;
+  const comunes = { id: name, name, value, onChange, className: clase };
+
+  let control;
+  if (as === 'select') {
+    control = <select {...comunes}>{children}</select>;
+  } else if (as === 'textarea') {
+    control = <textarea {...comunes} rows={rows} placeholder={placeholder} />;
+  } else {
+    control = <input {...comunes} type={type} placeholder={placeholder} />;
+  }
+
   return (
     <div className="mb-3">
       <label htmlFor={name} className="form-label">
         {label}
       </label>
-      <input
-        id={name}
-        name={name}
-        type={type}
-        className={`form-control ${error ? 'is-invalid' : ''}`}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-      />
+      {control}
       {error && <div className="invalid-feedback">{error}</div>}
     </div>
   );

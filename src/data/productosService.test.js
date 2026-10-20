@@ -33,5 +33,11 @@ describe('productosService', () => {
         eliminarProducto('TEC001');
         expect(obtenerProductos().length).toBe(5);
     });
+
+      it('actualizar un producto inexistente lanza un error', () => {
+        expect(() => actualizarProducto('NO-EXISTE', { precio: 1 })).toThrow(
+            'Producto no encontrado'
+    );
+  });
 });
 
