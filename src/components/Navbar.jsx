@@ -36,6 +36,9 @@ function Navbar() {
               <NavLink className="nav-link" to="/ofertas">Ofertas</NavLink>
             </li>
             <li className="nav-item">
+              <NavLink className="nav-link" to="/nosotros">Nosotros</NavLink>
+            </li>
+            <li className="nav-item">
               <NavLink className="nav-link" to="/carrito">
                 Carrito
                 <span className="badge bg-primary ms-1">{cantidadTotal}</span>

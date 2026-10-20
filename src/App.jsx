@@ -12,6 +12,7 @@ import PagoFallido from './pages/PagoFallido';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
 import Admin from './pages/Admin';
+import Nosotros from './pages/Nosotros';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/producto/:codigo" element={<Detalle />} />
         <Route path="/categorias" element={<Categorias />} />
         <Route path="/ofertas" element={<Ofertas />} />
+        <Route path="/nosotros" element={<Nosotros />} />
         <Route path="/carrito" element={<Carrito />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/compra-exitosa" element={<CompraExitosa />} />
