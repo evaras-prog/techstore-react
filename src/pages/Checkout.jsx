@@ -7,6 +7,7 @@ import { regionesComunas, obtenerComunas } from '../data/regiones';
 import { validarCheckout } from '../data/validacionesCheckout';
 import { procesarPago } from '../data/pagoService';
 import { crearPedido } from '../data/pedidosService';
+import { descontarStock } from '../data/productosService';
 import CampoFormulario from '../components/CampoFormulario';
 
 function Checkout() {
@@ -79,6 +80,8 @@ function Checkout() {
       })),
     });
 
+
+    descontarStock(items);
     vaciar();
     navigate('/compra-exitosa', { state: { pedido } });
   };

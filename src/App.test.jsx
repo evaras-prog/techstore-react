@@ -38,4 +38,10 @@ describe('App', () => {
 
     expect(screen.getByRole('heading', { name: 'Blog TechStore' })).toBeInTheDocument();
   });
+
+    it('muestra la página 404 cuando la dirección no existe', () => {
+    renderApp('/ruta-que-no-existe');
+
+    expect(screen.getByRole('heading', { name: 'Página no encontrada' })).toBeInTheDocument();
+  });
 });
