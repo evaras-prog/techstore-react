@@ -3,6 +3,7 @@ import {
     crearProducto,
     actualizarProducto,
     eliminarProducto,
+    descontarStock,
 } from './productosService';
 
 describe('productosService', () => {
@@ -39,5 +40,23 @@ describe('productosService', () => {
             'Producto no encontrado'
     );
   });
+
+      it('descuenta el stock de los productos comprados y deja el resto igual', () => {
+        const antes = obtenerProductos();
+        const stockTEC001 = antes.find((p) => p.codigo === 'TEC001').stock;
+        const stockTEC002 = antes.find((p) => p.codigo === 'TEC002').stock;
+
+        descontarStock([{ codigo: 'TEC001', cantidad: 3 }]);
+
+        const despues = obtenerProductos();
+        expect(despues.find((p) => p.codigo === 'TEC001').stock).toBe(stockTEC001 - 3);
+        expect(despues.find((p) => p.codigo === 'TEC002').stock).toBe(stockTEC002);
+    });
+
+    it('el stock nunca queda bajo cero', () => {
+        descontarStock([{ codigo: 'TEC003', cantidad: 999 }]);
+
+        expect(obtenerProductos().find((p) => p.codigo === 'TEC003').stock).toBe(0);
+    });
 });
 

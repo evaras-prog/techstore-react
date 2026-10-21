@@ -16,6 +16,7 @@ import Nosotros from './pages/Nosotros';
 import Blogs from './pages/Blogs';
 import DetalleBlog from './pages/DetalleBlog';
 import Contacto from './pages/Contacto';
+import NoEncontrado from './pages/NoEncontrado';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route path="/registro" element={<Registro />} />
         <Route path="/admin/*" element={<Admin />} />
         <Route path="/contacto" element={<Contacto />} />
+        <Route path="*" element={<NoEncontrado />} />
       </Routes>
     </BrowserRouter>
   );

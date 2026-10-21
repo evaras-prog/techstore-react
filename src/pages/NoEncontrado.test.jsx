@@ -1,0 +1,16 @@
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import NoEncontrado from './NoEncontrado';
+
+describe('NoEncontrado', () => {
+  it('informa que la página no existe y ofrece volver al inicio', () => {
+    render(
+      <MemoryRouter>
+        <NoEncontrado />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole('heading', { name: 'Página no encontrada' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Volver al inicio' })).toHaveAttribute('href', '/');
+  });
+});

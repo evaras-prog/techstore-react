@@ -5,6 +5,11 @@ import CompraExitosa from './CompraExitosa';
 import PagoFallido from './PagoFallido';
 import { AuthProvider } from '../context/AuthContext';
 import { CarritoProvider } from '../context/CarritoContext';
+import { obtenerProductos } from '../data/productosService';
+
+function stockDe(codigo) {
+  return obtenerProductos().find((p) => p.codigo === codigo).stock;
+}
 
 const producto = {
   codigo: 'TEC001',
@@ -169,5 +174,27 @@ describe('Checkout', () => {
 
     expect(screen.getByText(/No se pudo realizar el pago/)).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem('carrito'))).toHaveLength(1);
+  });
+
+    it('descuenta del stock las unidades compradas cuando el pago es aprobado', () => {
+    const stockInicial = stockDe('TEC001');
+    localStorage.setItem('carrito', JSON.stringify([{ ...producto, cantidad: 2 }]));
+    renderCheckout();
+
+    completarFormulario('4111 1111 1111 1111');
+    presionarPagar();
+
+    expect(stockDe('TEC001')).toBe(stockInicial - 2);
+  });
+
+  it('no descuenta stock cuando el pago es rechazado', () => {
+    const stockInicial = stockDe('TEC001');
+    localStorage.setItem('carrito', JSON.stringify([{ ...producto, cantidad: 2 }]));
+    renderCheckout();
+
+    completarFormulario('4111 1111 1111 0000');
+    presionarPagar();
+
+    expect(stockDe('TEC001')).toBe(stockInicial);
   });
 });

@@ -51,3 +51,14 @@ function leer() {
         escribir(leer().filter((p) => p.codigo !== codigo));
     }
 
+        // Descuenta del stock las unidades compradas (nunca baja de 0)
+    export function descontarStock(items) {
+        const actualizada = leer().map((p) => {
+            const comprado = items.find((i) => i.codigo === p.codigo);
+            return comprado
+                ? { ...p, stock: Math.max(0, p.stock - comprado.cantidad) }
+                : p;
+        });
+        escribir(actualizada);
+    }
+
