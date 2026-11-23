@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router-dom';
 import Navbar from './Navbar';
 import { AuthProvider } from '../context/AuthContext';
 import { CarritoProvider } from '../context/CarritoContext';
+import { sembrarSesion } from '../testUtils';
 
 function renderNavbar() {
   return render(
@@ -17,7 +18,7 @@ function renderNavbar() {
 }
 
 function iniciarSesion(usuario) {
-  localStorage.setItem('usuarioActivo', JSON.stringify(usuario));
+  sembrarSesion(usuario);
 }
 
 describe('Navbar', () => {

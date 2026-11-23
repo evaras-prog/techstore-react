@@ -6,6 +6,7 @@ import PagoFallido from './PagoFallido';
 import { AuthProvider } from '../context/AuthContext';
 import { CarritoProvider } from '../context/CarritoContext';
 import { obtenerProductos } from '../data/productosService';
+import { sembrarSesion } from '../testUtils';
 
 function stockDe(codigo) {
   return obtenerProductos().find((p) => p.codigo === codigo).stock;
@@ -92,18 +93,15 @@ describe('Checkout', () => {
 
   it('autocompleta los datos del formulario cuando hay sesión iniciada', () => {
     localStorage.setItem('carrito', JSON.stringify([producto]));
-    localStorage.setItem(
-      'usuarioActivo',
-      JSON.stringify({
-        nombre: 'Ana',
-        apellidos: 'Pérez',
-        correo: 'ana@correo.cl',
-        direccion: 'Av. Providencia 1234',
-        region: 'Región Metropolitana de Santiago',
-        comuna: 'Santiago',
-        tipo: 'Cliente',
-      })
-    );
+    sembrarSesion({
+      nombre: 'Ana',
+      apellidos: 'Pérez',
+      correo: 'ana@correo.cl',
+      direccion: 'Av. Providencia 1234',
+      region: 'Región Metropolitana de Santiago',
+      comuna: 'Santiago',
+      tipo: 'Cliente',
+    });
     renderCheckout();
 
     expect(screen.getByLabelText('Nombre')).toHaveValue('Ana');

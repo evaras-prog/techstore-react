@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import CampoFormulario from "../components/CampoFormulario";
 import { useAuth } from "../context/AuthContext";
-import { buscarPorCorreo } from "../data/usuariosService";
+import { ApiError } from "../data/apiClient";
 
 function Login() {
   const navigate = useNavigate();
@@ -15,21 +15,23 @@ function Login() {
 
   const [error, setError] = useState("");
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     setError("");
 
-    const usuario = buscarPorCorreo(correo.trim());
-
-    if (!usuario || usuario.password !== password) {
-      setError("Correo o contraseña incorrectos.");
-      return;
+    try {
+      await login(correo.trim(), password);
+      navigate("/");
+    } catch (e) {
+      if (e instanceof ApiError && e.estado === 401) {
+        setError("Correo o contraseña incorrectos.");
+      } else if (e instanceof ApiError) {
+        setError(e.message);
+      } else {
+        setError("No se pudo conectar con el servidor.");
+      }
     }
-
-    login(usuario);
-
-    navigate("/");
   }
 
   return (
