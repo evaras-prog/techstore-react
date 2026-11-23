@@ -5,11 +5,11 @@ import CampoFormulario from "../components/CampoFormulario";
 
 import {
   validarCorreo,
-  validarPassword,
   validarRun,
 } from "../data/validaciones";
 
-import { crearUsuario } from "../data/usuariosService";
+import { useAuth } from "../context/AuthContext";
+import { ApiError } from "../data/apiClient";
 
 import {
   regionesComunas,
@@ -18,6 +18,7 @@ import {
 
 function Registro() {
   const navigate = useNavigate();
+  const { registrar } = useAuth();
 
   const [datos, setDatos] = useState({
     run: "",
@@ -88,9 +89,9 @@ function Registro() {
 
     if (!datos.password) {
       nuevosErrores.password = "Ingresa una contraseña.";
-    } else if (!validarPassword(datos.password)) {
+    } else if (datos.password.length < 6 || datos.password.length > 10) {
       nuevosErrores.password =
-        "La contraseña debe tener entre 4 y 10 caracteres.";
+          "La contraseña debe tener entre 6 y 10 caracteres.";
     }
 
     if (!datos.region) {
@@ -110,7 +111,7 @@ function Registro() {
     return Object.keys(nuevosErrores).length === 0;
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     setErrorGeneral("");
@@ -120,14 +121,20 @@ function Registro() {
     }
 
     try {
-      crearUsuario({
-        ...datos,
-        tipo: "Cliente",
+      await registrar({
+        nombre: `${datos.nombre.trim()} ${datos.apellidos.trim()}`,
+        correo: datos.correo.trim(),
+        password: datos.password,
       });
-
-      navigate("/login");
-    } catch (error) {
-      setErrorGeneral(error.message);
+      navigate("/");
+    } catch (e) {
+      if (e instanceof ApiError && e.estado === 409) {
+        setErrorGeneral("Ya existe una cuenta con ese correo.");
+      } else if (e instanceof ApiError) {
+        setErrorGeneral(Object.values(e.detalles ?? {})[0] ?? e.message);
+      } else {
+        setErrorGeneral("No se pudo conectar con el servidor.");
+      }
     }
   }
 
@@ -192,7 +199,7 @@ function Registro() {
                   value={datos.password}
                   onChange={handleChange}
                   error={errores.password}
-                  placeholder="4 a 10 caracteres"
+                  placeholder="6 a 10 caracteres"
                 />
 
                 <div className="mb-3">

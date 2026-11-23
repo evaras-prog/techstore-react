@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import { AuthProvider } from '../context/AuthContext';
+import { sembrarSesion } from '../testUtils';
 
 function renderProtegida() {
   return render(
@@ -35,27 +36,21 @@ describe('ProtectedRoute', () => {
   });
 
   it('redirige al inicio a un cliente', () => {
-    localStorage.setItem('usuarioActivo', JSON.stringify({ nombre: 'Ana', tipo: 'Cliente' }));
+    sembrarSesion({ nombre: 'Ana', tipo: 'Cliente' });
     renderProtegida();
 
     expect(screen.getByText('Inicio público')).toBeInTheDocument();
   });
 
   it('permite el paso a un administrador', () => {
-    localStorage.setItem(
-      'usuarioActivo',
-      JSON.stringify({ nombre: 'Admin', tipo: 'Administrador' })
-    );
+    sembrarSesion({ nombre: 'Admin', tipo: 'Administrador' });
     renderProtegida();
 
     expect(screen.getByText('Zona privada')).toBeInTheDocument();
   });
 
   it('permite el paso a un vendedor', () => {
-    localStorage.setItem(
-      'usuarioActivo',
-      JSON.stringify({ nombre: 'Vendedor', tipo: 'Vendedor' })
-    );
+    sembrarSesion({ nombre: 'Vendedor', tipo: 'Vendedor' });
     renderProtegida();
 
     expect(screen.getByText('Zona privada')).toBeInTheDocument();

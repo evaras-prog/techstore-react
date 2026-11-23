@@ -1,13 +1,14 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import Registro from "./Registro";
+import { ApiError } from "../data/apiClient";
 import { regionesComunas } from "../data/regiones";
 
-const { mockNavigate, mockCrearUsuario } = vi.hoisted(() => ({
+const { mockNavigate, mockRegistrar } = vi.hoisted(() => ({
   mockNavigate: vi.fn(),
-  mockCrearUsuario: vi.fn(),
+  mockRegistrar: vi.fn(),
 }));
 
 vi.mock("react-router-dom", async () => {
@@ -19,13 +20,15 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-vi.mock("../data/usuariosService", () => ({
-  crearUsuario: mockCrearUsuario,
+vi.mock("../context/AuthContext", () => ({
+  useAuth: () => ({ registrar: mockRegistrar }),
 }));
 
 describe("Registro", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockRegistrar.mockReset();
+    mockRegistrar.mockResolvedValue({});
   });
 
   it("renderiza correctamente el formulario de registro", () => {
@@ -75,7 +78,7 @@ describe("Registro", () => {
       screen.getByText("Ingresa tu dirección.")
     ).toBeInTheDocument();
 
-    expect(mockCrearUsuario).not.toHaveBeenCalled();
+    expect(mockRegistrar).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
@@ -109,11 +112,11 @@ describe("Registro", () => {
 
     expect(
       screen.getByText(
-        "La contraseña debe tener entre 4 y 10 caracteres."
+        "La contraseña debe tener entre 6 y 10 caracteres."
       )
     ).toBeInTheDocument();
 
-    expect(mockCrearUsuario).not.toHaveBeenCalled();
+    expect(mockRegistrar).not.toHaveBeenCalled();
   });
 
   it("habilita las comunas cuando se selecciona una región", async () => {
@@ -142,7 +145,7 @@ describe("Registro", () => {
     });
   });
 
-  it("registra correctamente un cliente y redirige al login", async () => {
+  it("registra correctamente un cliente y entra al inicio", async () => {
     const user = userEvent.setup();
 
     render(<Registro />);
@@ -153,52 +156,37 @@ describe("Registro", () => {
     await user.type(screen.getByLabelText("RUN"), "111111111");
     await user.type(screen.getByLabelText("Nombre"), "Victor");
     await user.type(screen.getByLabelText("Apellidos"), "Cortez");
-    await user.type(
-      screen.getByLabelText("Correo"),
-      "victor@duoc.cl"
-    );
-    await user.type(screen.getByLabelText("Contraseña"), "1234");
+    await user.type(screen.getByLabelText("Correo"), "victor@duoc.cl");
+    await user.type(screen.getByLabelText("Contraseña"), "123456");
 
     await user.selectOptions(
-      screen.getByLabelText("Región"),
-      primeraRegion.region
+        screen.getByLabelText("Región"),
+        primeraRegion.region
     );
-
     await user.selectOptions(
-      screen.getByLabelText("Comuna"),
-      primeraComuna
+        screen.getByLabelText("Comuna"),
+        primeraComuna
     );
-
-    await user.type(
-      screen.getByLabelText("Dirección"),
-      "Alameda 123"
-    );
+    await user.type(screen.getByLabelText("Dirección"), "Alameda 123");
 
     await user.click(
-      screen.getByRole("button", { name: /registrarse/i })
+        screen.getByRole("button", { name: /registrarse/i })
     );
 
-    expect(mockCrearUsuario).toHaveBeenCalledWith({
-      run: "111111111",
-      nombre: "Victor",
-      apellidos: "Cortez",
-      correo: "victor@duoc.cl",
-      password: "1234",
-      region: primeraRegion.region,
-      comuna: primeraComuna,
-      direccion: "Alameda 123",
-      tipo: "Cliente",
+    await waitFor(() => {
+      expect(mockRegistrar).toHaveBeenCalledWith({
+        nombre: "Victor Cortez",
+        correo: "victor@duoc.cl",
+        password: "123456",
+      });
+      expect(mockNavigate).toHaveBeenCalledWith("/");
     });
-
-    expect(mockNavigate).toHaveBeenCalledWith("/login");
   });
 
-  it("muestra el error entregado por el servicio si no puede registrar", async () => {
+  it("muestra un mensaje cuando el correo ya está registrado", async () => {
     const user = userEvent.setup();
 
-    mockCrearUsuario.mockImplementation(() => {
-      throw new Error("El correo ya está registrado");
-    });
+    mockRegistrar.mockRejectedValue(new ApiError(409, "Email ya registrado"));
 
     render(<Registro />);
 
@@ -208,35 +196,26 @@ describe("Registro", () => {
     await user.type(screen.getByLabelText("RUN"), "111111111");
     await user.type(screen.getByLabelText("Nombre"), "Victor");
     await user.type(screen.getByLabelText("Apellidos"), "Cortez");
-    await user.type(
-      screen.getByLabelText("Correo"),
-      "victor@duoc.cl"
-    );
-    await user.type(screen.getByLabelText("Contraseña"), "1234");
+    await user.type(screen.getByLabelText("Correo"), "victor@duoc.cl");
+    await user.type(screen.getByLabelText("Contraseña"), "123456");
 
     await user.selectOptions(
       screen.getByLabelText("Región"),
       primeraRegion.region
     );
-
     await user.selectOptions(
       screen.getByLabelText("Comuna"),
       primeraComuna
     );
-
-    await user.type(
-      screen.getByLabelText("Dirección"),
-      "Alameda 123"
-    );
+    await user.type(screen.getByLabelText("Dirección"), "Alameda 123");
 
     await user.click(
       screen.getByRole("button", { name: /registrarse/i })
     );
 
-    expect(
-      screen.getByRole("alert")
-    ).toHaveTextContent("El correo ya está registrado");
-
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Ya existe una cuenta con ese correo."
+    );
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
